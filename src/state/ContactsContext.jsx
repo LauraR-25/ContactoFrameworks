@@ -1,15 +1,32 @@
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const ContactsContext = createContext(null);
 
 const PLACEHOLDER_PHOTO = "https://www.gravatar.com/avatar/?d=mp&s=200";
 
-const initialContacts = [];
+const STORAGE_KEY = "contacto_frameworks_contacts";
+
+const loadContacts = () => {
+  if (typeof window === "undefined") return [];
+  const raw = window.localStorage.getItem(STORAGE_KEY);
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
 
 const createId = () => `c-${Math.random().toString(36).slice(2, 9)}`;
 
 export function ContactsProvider({ children }) {
-  const [contacts, setContacts] = useState(initialContacts);
+  const [contacts, setContacts] = useState(() => loadContacts());
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(contacts));
+  }, [contacts]);
 
   const addContact = (contact) => {
     const newContact = {

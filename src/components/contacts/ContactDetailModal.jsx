@@ -1,4 +1,4 @@
-export default function ContactDetailModal({ contact, onClose }) {
+export default function ContactDetailModal({ contact, onClose, onEdit, onDelete }) {
   if (!contact) return null;
 
   return (
@@ -8,9 +8,17 @@ export default function ContactDetailModal({ contact, onClose }) {
           <h2>
             {contact.firstName} {contact.lastName}
           </h2>
-          <button className="btn" type="button" onClick={onClose}>
-            Cerrar
-          </button>
+          <div className="modal__actions">
+            <button className="btn" type="button" onClick={() => onEdit(contact)}>
+              Editar
+            </button>
+            <button className="btn" type="button" onClick={() => onDelete(contact.id)}>
+              Borrar
+            </button>
+            <button className="btn" type="button" onClick={onClose}>
+              Cerrar
+            </button>
+          </div>
         </div>
         <div className="modal__content">
           <img src={contact.photo} alt={`${contact.firstName} ${contact.lastName}`} />

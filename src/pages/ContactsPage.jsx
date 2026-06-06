@@ -5,10 +5,10 @@ import ContactList from "../components/contacts/ContactList.jsx";
 import ContactDetailModal from "../components/contacts/ContactDetailModal.jsx";
 
 const viewModes = [
+  { value: "list", label: "Lista clasica" },
+  { value: "grid", label: "Tarjeta / Grid" },
   { value: "compact", label: "Tarjeta compacta" },
-  { value: "detailed", label: "Lista detallada" },
-  { value: "minimal", label: "Minimalista" },
-  { value: "gallery", label: "Galeria" }
+  { value: "matrix", label: "Matriz avanzada" }
 ];
 
 export default function ContactsPage() {
@@ -52,7 +52,18 @@ export default function ContactsPage() {
           onDelete={deleteContact}
         />
       </section>
-      <ContactDetailModal contact={selectedContact} onClose={() => setSelectedContact(null)} />
+      <ContactDetailModal
+        contact={selectedContact}
+        onClose={() => setSelectedContact(null)}
+        onEdit={(contact) => {
+          setEditingContact(contact);
+          setSelectedContact(null);
+        }}
+        onDelete={(contactId) => {
+          deleteContact(contactId);
+          setSelectedContact(null);
+        }}
+      />
     </div>
   );
 }

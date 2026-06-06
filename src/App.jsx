@@ -9,21 +9,19 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <h1>Contacto Frameworks</h1>
-        <div className="app-header__right">
-          {isAuthenticated ? (
-            <>
-              <span className="app-user">{user.username}</span>
-              <button type="button" onClick={logout} className="btn">
-                Cerrar sesion
-              </button>
-            </>
-          ) : null}
-        </div>
-      </header>
+      {isAuthenticated && (
+        <header className="app-header">
+          <h1>Contacto Frameworks</h1>
+          <div className="app-header__right">
+            <span className="app-user">{user.username}</span>
+            <button type="button" onClick={logout} className="btn">
+              Cerrar sesion
+            </button>
+          </div>
+        </header>
+      )}
 
-      <main className="app-main">
+      <main className={`app-main ${!isAuthenticated ? 'no-padding' : ''}`}>
         <Routes>
           <Route path="/" element={<Navigate to={isAuthenticated ? "/contacts" : "/login"} replace />} />
           <Route path="/login" element={<LoginPage />} />
