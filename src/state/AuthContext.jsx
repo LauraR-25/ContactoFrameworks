@@ -27,6 +27,7 @@ export function AuthProvider({ children }) {
   const [users, setUsers] = useState(() => loadFromStorage(STORAGE_KEYS.users, []));
   const [user, setUser] = useState(() => loadFromStorage(STORAGE_KEYS.session, null));
 
+  // Mantener los useEffects para persistencia reactiva normal
   useEffect(() => {
     saveToStorage(STORAGE_KEYS.users, users);
   }, [users]);
@@ -36,26 +37,50 @@ export function AuthProvider({ children }) {
   }, [user]);
 
   const login = (username, password) => {
-    const match = users.find(
-      (item) => item.username === username && item.password === password
+    // ✅ CORRECCIÓN: Leemos directamente el LocalStorage para tener la lista más fresca real-time
+    const currentUsers = loadFromStorage(STORAGE_KEYS.users, users);
+    
+    const match = currentUsers.find(
+      (item) => item.username.trim().toLowerCase() === username.trim().toLowerCase() && item.password === password
     );
+    
     if (!match) {
       return { ok: false, message: "Credenciales invalidas." };
     }
-    setUser({ username: match.username, email: match.email });
+    
+    const loggedUser = { username: match.username, email: match.email };
+    setUser(loggedUser);
+    saveToStorage(STORAGE_KEYS.session, loggedUser); // Guardado inmediato forzado
     return { ok: true };
   };
 
   const register = ({ username, email, password }) => {
-    const exists = users.some((item) => item.username === username || item.email === email);
+    // ✅ CORRECCIÓN: Leemos la lista real-time antes de verificar si existe
+    const currentUsers = loadFromStorage(STORAGE_KEYS.users, users);
+    
+    const exists = currentUsers.some(
+      (item) => item.username.trim().toLowerCase() === username.trim().toLowerCase() || item.email.toLowerCase() === email.toLowerCase()
+    );
+    
     if (exists) {
       return { ok: false, message: "Usuario o correo ya registrados." };
     }
-    setUsers((prev) => [...prev, { username, email, password }]);
+    
+    const updatedUsers = [...currentUsers, { username, email, password }];
+    
+    // ✅ SOLUCIÓN AL RETRASO: Guardamos en el estado de React Y ADEMÁS escribimos directo al disco ya mismo
+    setUsers(updatedUsers);
+    saveToStorage(STORAGE_KEYS.users, updatedUsers); 
+    
     return { ok: true };
   };
 
-  const logout = () => setUser(null);
+  const logout = () => {
+    setUser(null);
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem(STORAGE_KEYS.session); // Limpieza absoluta de la sesión anterior
+    }
+  };
 
   const value = useMemo(
     () => ({ user, login, register, logout, isAuthenticated: !!user }),

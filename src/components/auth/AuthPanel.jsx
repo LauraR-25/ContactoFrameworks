@@ -16,6 +16,13 @@ export default function AuthPanel({ onLogin, onRegister }) {
 
   const resetMessages = () => setMessage("");
 
+  // FUNCIÓN NUEVA: Limpiar todos los inputs para evitar que se queden datos viejos pegados
+  const clearInputs = () => {
+    setUsername("");
+    setEmail("");
+    setPassword("");
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     resetMessages();
@@ -39,7 +46,11 @@ export default function AuthPanel({ onLogin, onRegister }) {
         setMessage(result.message || "Error al registrar.");
         return;
       }
-      setMessage("Cuenta creada. Inicia sesion.");
+      
+      // ✅ CORRECCIÓN AQUÍ: Al registrar con éxito, limpiamos los inputs 
+      // para evitar que el autocompletado ponga el usuario viejo.
+      clearInputs();
+      setMessage("Cuenta creada con exito. ¡Inicia sesion ahora!");
       setMode("login");
       return;
     }
@@ -71,6 +82,7 @@ export default function AuthPanel({ onLogin, onRegister }) {
                 onChange={(event) =>
                   setUsername(sanitizeAlphaNum(event.target.value, MAX_USERNAME))
                 }
+                autoComplete="off" // ✅ Evita interferencias del navegador
               />
             </div>
             
@@ -81,6 +93,7 @@ export default function AuthPanel({ onLogin, onRegister }) {
                   placeholder="Email"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
+                  autoComplete="off"
                 />
               </div>
             )}
@@ -94,6 +107,7 @@ export default function AuthPanel({ onLogin, onRegister }) {
                 onChange={(event) =>
                   setPassword(sanitizeAlphaNum(event.target.value, MAX_PASSWORD))
                 }
+                autoComplete="new-password" // ✅ Evita que rellene contraseñas viejas
               />
             </div>
 
@@ -106,6 +120,7 @@ export default function AuthPanel({ onLogin, onRegister }) {
                 type="button"
                 onClick={() => {
                   resetMessages();
+                  clearInputs(); // ✅ Limpia los campos al alternar entre pantallas
                   setMode((prev) => (prev === "login" ? "signup" : "login"));
                 }}
               >
