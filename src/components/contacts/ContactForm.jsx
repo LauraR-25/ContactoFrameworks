@@ -1,95 +1,126 @@
-import { useEffect, useState } from "react";
-
-const emptyForm = {
-  firstName: "",
-  lastName: "",
-  number: "",
-  photo: "",
-  notes: "",
-  nicknames: ""
-};
+import { useState, useEffect } from "react";
 
 export default function ContactForm({ onSave, editingContact, onCancel }) {
-  const [form, setForm] = useState(emptyForm);
-  const [error, setError] = useState("");
+  const blankForm = {
+    firstName: "",
+    lastName: "",
+    number: "",
+    photo: "",
+    notes: "",
+    nicknames: "" // Mapeado como Apodo
+  };
 
+  const [formData, setFormData] = useState(blankForm);
+
+  // Sincroniza el formulario si el usuario presiona "Editar" en un contacto
   useEffect(() => {
     if (editingContact) {
-      setForm({
-        firstName: editingContact.firstName,
-        lastName: editingContact.lastName,
-        number: editingContact.number,
-        photo: editingContact.photo,
-        notes: editingContact.notes,
-        nicknames: editingContact.nicknames
+      setFormData({
+        firstName: editingContact.firstName || "",
+        lastName: editingContact.lastName || "",
+        number: editingContact.number || "",
+        photo: editingContact.photo || "",
+        notes: editingContact.notes || "",
+        nicknames: editingContact.nicknames || ""
       });
-      setError("");
     } else {
-      setForm(emptyForm);
-      setError("");
+      setFormData(blankForm);
     }
   }, [editingContact]);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (!form.firstName.trim() || !form.lastName.trim() || !form.number.trim()) {
-      setError("Nombre, apellido y numero son obligatorios.");
-      return;
-    }
-
-    onSave({
-      firstName: form.firstName.trim(),
-      lastName: form.lastName.trim(),
-      number: form.number.trim(),
-      photo: form.photo.trim(),
-      notes: form.notes.trim(),
-      nicknames: form.nicknames.trim()
-    });
-    setForm(emptyForm);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(formData);
+    setFormData(blankForm); // Limpia los campos después de guardar
   };
 
   return (
-    <form onSubmit={handleSubmit} className="card contact-form">
-      <h2>{editingContact ? "Editar contacto" : "Nuevo contacto"}</h2>
-      {error ? <p style={{ color: "#b42318" }}>{error}</p> : null}
+    <form className="contact-form-container" onSubmit={handleSubmit}>
+      <h3 className="contact-form-title">
+        {editingContact ? "Editar Contacto" : "Nuevo Contacto"}
+      </h3>
+
       <div className="form-field">
         <label>Nombre *</label>
-        <input name="firstName" value={form.firstName} onChange={handleChange} />
+        <input 
+          name="firstName" 
+          value={formData.firstName} 
+          onChange={handleChange} 
+          maxLength={20} 
+          required 
+          placeholder="Máx. 20 caracteres"
+        />
       </div>
+
       <div className="form-field">
         <label>Apellido *</label>
-        <input name="lastName" value={form.lastName} onChange={handleChange} />
+        <input 
+          name="lastName" 
+          value={formData.lastName} 
+          onChange={handleChange} 
+          maxLength={20} 
+          required 
+          placeholder="Máx. 20 caracteres"
+        />
       </div>
+
       <div className="form-field">
-        <label>Numero *</label>
-        <input name="number" value={form.number} onChange={handleChange} />
+        <label>Número *</label>
+        <input 
+          name="number" 
+          value={formData.number} 
+          onChange={handleChange} 
+          required 
+          placeholder="Ej: +58412..."
+        />
       </div>
+
       <div className="form-field">
-        <label>Foto (URL)</label>
-        <input name="photo" value={form.photo} onChange={handleChange} />
+        <label>URL (Foto)</label>
+        <input 
+          name="photo" 
+          value={formData.photo} 
+          onChange={handleChange} 
+          placeholder="https://ejemplo.com/foto.jpg"
+        />
       </div>
+
+      <div className="form-field">
+        <label>Apodo</label>
+        <input 
+          name="nicknames" 
+          value={formData.nicknames} 
+          onChange={handleChange} 
+          maxLength={20} 
+          placeholder="Máx. 20 caracteres"
+        />
+      </div>
+
       <div className="form-field">
         <label>Notas</label>
-        <textarea name="notes" rows="3" value={form.notes} onChange={handleChange} />
+        <textarea 
+          name="notes" 
+          value={formData.notes} 
+          onChange={handleChange} 
+          rows="3" 
+          maxLength={20} 
+          placeholder="Descripción corta (Máx. 20)"
+        />
       </div>
-      <div className="form-field">
-        <label>Apodos</label>
-        <input name="nicknames" value={form.nicknames} onChange={handleChange} />
-      </div>
-      <div style={{ display: "flex", gap: "8px", marginTop: "12px" }}>
-        <button className="btn primary" type="submit">
-          {editingContact ? "Guardar cambios" : "Crear"}
+
+      <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+        <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>
+          Guardar
         </button>
-        {editingContact ? (
-          <button type="button" className="btn" onClick={onCancel}>
+        {editingContact && (
+          <button type="button" className="btn btn-secondary" onClick={onCancel}>
             Cancelar
           </button>
-        ) : null}
+        )}
       </div>
     </form>
   );

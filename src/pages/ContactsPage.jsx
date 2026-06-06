@@ -5,7 +5,7 @@ import ContactList from "../components/contacts/ContactList.jsx";
 import ContactDetailModal from "../components/contacts/ContactDetailModal.jsx";
 
 const viewModes = [
-  { value: "list", label: "Lista clasica" },
+  { value: "list", label: "Lista clásica" },
   { value: "grid", label: "Tarjeta / Grid" },
   { value: "compact", label: "Tarjeta compacta" },
   { value: "matrix", label: "Matriz avanzada" }
@@ -21,37 +21,45 @@ export default function ContactsPage() {
     if (editingContact) {
       updateContact(editingContact.id, data);
       setEditingContact(null);
-      return;
+    } else {
+      addContact(data);
     }
-    addContact(data);
   };
 
   return (
     <div className="layout-grid">
-      <ContactForm
-        onSave={handleSave}
-        editingContact={editingContact}
-        onCancel={() => setEditingContact(null)}
-      />
-      <section>
-        <div className="view-selector">
-          <label>Vista:</label>
-          <select value={viewMode} onChange={(event) => setViewMode(event.target.value)}>
-            {viewModes.map((mode) => (
-              <option key={mode.value} value={mode.value}>
-                {mode.label}
-              </option>
-            ))}
-          </select>
+      {/* Lado Izquierdo: Formulario Fijo */}
+      <div className="form-container">
+        <ContactForm
+          onSave={handleSave}
+          editingContact={editingContact}
+          onCancel={() => setEditingContact(null)}
+        />
+      </div>
+
+      {/* Lado Derecho: Controles de vista y Listas */}
+      <section style={{ width: "100%" }}>
+        <div className="view-selector-wrapper">
+          <div className="view-selector">
+            <label>Vista:</label>
+            <select value={viewMode} onChange={(e) => setViewMode(e.target.value)}>
+              {viewModes.map((m) => (
+                <option key={m.value} value={m.value}>{m.label}</option>
+              ))}
+            </select>
+          </div>
         </div>
+        
         <ContactList
           contacts={contacts}
           viewMode={viewMode}
-          onSelect={(contact) => setSelectedContact(contact)}
-          onEdit={(contact) => setEditingContact(contact)}
+          onSelect={setSelectedContact}
+          onEdit={setEditingContact}
           onDelete={deleteContact}
         />
       </section>
+
+      {/* Modal de Detalle */}
       <ContactDetailModal
         contact={selectedContact}
         onClose={() => setSelectedContact(null)}
@@ -59,8 +67,8 @@ export default function ContactsPage() {
           setEditingContact(contact);
           setSelectedContact(null);
         }}
-        onDelete={(contactId) => {
-          deleteContact(contactId);
+        onDelete={(id) => {
+          deleteContact(id);
           setSelectedContact(null);
         }}
       />

@@ -13,9 +13,9 @@ export default function App() {
         <header className="app-header">
           <h1>Contacto Frameworks</h1>
           <div className="app-header__right">
-            <span className="app-user">{user.username}</span>
-            <button type="button" onClick={logout} className="btn">
-              Cerrar sesion
+            <span className="app-user">Cómo entré: {user?.username}</span>
+            <button type="button" onClick={logout} className="btn btn-logout">
+              Cerrar sesión
             </button>
           </div>
         </header>

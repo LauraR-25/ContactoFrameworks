@@ -1,6 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
+const truncate = (text, maxLength = 20) => {
+  if (!text) return "";
+  return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+};
+
 export default function ContactCardMinimal({ contacts, onSelect, onEdit, onDelete }) {
   if (!contacts || contacts.length === 0) return null;
 

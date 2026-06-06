@@ -23,7 +23,7 @@ export default function ContactList({ contacts, viewMode, onSelect, onEdit, onDe
     return <ContactCardMinimal contacts={contacts} onSelect={onSelect} onEdit={onEdit} onDelete={onDelete} />;
   }
 
-  // Carrusel 3D (Vista 'list')
+  // Carrusel Plano Estilo Deck (Vista 'list')
   if (viewMode === 'list') {
     const total = contacts.length;
     const handlePrev = () => setActiveIndex((prev) => (prev - 1 + total) % total);
@@ -94,24 +94,99 @@ export default function ContactList({ contacts, viewMode, onSelect, onEdit, onDe
 }
 
 const CarouselContainer = styled.div`
-  display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; margin: 20px auto;
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  width: 100%; 
+  margin: 20px auto;
 
-  .carousel-wrapper { display: flex; align-items: center; gap: 10px; width: 100%; max-width: 900px; justify-content: center; position: relative; }
-  .wrap_carousel_3d { position: relative; width: 550px; height: 380px; display: flex; align-items: center; justify-content: center; perspective: 1000px; }
-
-  /* Animación Suave Optimizada */
-  .card-slot {
-    position: absolute;
-    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-    will-change: transform, opacity; /* <--- IMPORTANTE: Esto elimina los saltos */
-    width: 220px; height: 300px; transform-origin: center center;
+  .carousel-wrapper { 
+    display: flex; 
+    align-items: center; 
+    gap: 20px; 
+    width: 100%; 
+    max-width: 900px; 
+    justify-content: center; 
+    position: relative; 
+  }
+  
+  .wrap_carousel_3d { 
+    position: relative; 
+    width: 550px; 
+    height: 360px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
   }
 
-  .position-center { z-index: 3; transform: translate3d(0, 0, 0) rotateY(0deg) scale(1); opacity: 1; }
-  .position-left { z-index: 1; transform: translate3d(-140px, 15px, -100px) rotate(-12deg) scale(0.85); opacity: 0.9; cursor: pointer; }
-  .position-right { z-index: 1; transform: translate3d(140px, 15px, -100px) rotate(12deg) scale(0.85); opacity: 0.9; cursor: pointer; }
-  .position-hidden { z-index: 0; transform: translate3d(0, 0, -200px) scale(0.5); opacity: 0; pointer-events: none; }
+  /* Línea/Ranura estética del fondo del video */
+  .wrap_carousel_3d::after {
+    content: '';
+    position: absolute;
+    bottom: 12px;
+    left: 10%;
+    width: 80%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #333333, transparent);
+    z-index: 4;
+  }
 
-  .nav-btn { background: #ffffff; border: 1px solid #e5e7eb; padding: 10px 16px; border-radius: 50px; cursor: pointer; z-index: 10; transition: all 0.2s ease; }
-  .nav-btn:hover { background: #f9fafb; transform: scale(1.05); }
+  /* Estilo de la Tarjeta Base Alineada Abajo */
+  .card-slot {
+    position: absolute;
+    bottom: 20px; /* Ancladas desde abajo para el efecto bolsillo/ranura */
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease, z-index 0.5s step-end;
+    will-change: transform, opacity;
+    width: 220px; 
+    height: 300px; 
+    transform-origin: bottom center; /* La escala se calcula desde la base */
+  }
+
+  /* Tarjeta Activa (Centro): Al frente, escala real (1) y sutil elevación */
+  .position-center { 
+    z-index: 3; 
+    transform: translate3d(0, -15px, 0) scale(1); 
+    opacity: 1; 
+  }
+  
+  /* Tarjeta Izquierda: Desplazada horizontalmente, más pequeña (0.85) y al ras de la base */
+  .position-left { 
+    z-index: 2; 
+    transform: translate3d(-140px, 0, 0) scale(0.85); 
+    opacity: 0.85; 
+    cursor: pointer; 
+  }
+  
+  /* Tarjeta Derecha: Desplazada horizontalmente, más pequeña (0.85) y al ras de la base */
+  .position-right { 
+    z-index: 2; 
+    transform: translate3d(140px, 0, 0) scale(0.85); 
+    opacity: 0.85; 
+    cursor: pointer; 
+  }
+  
+  /* Tarjetas en espera (Ocultas perfectamente detrás) */
+  .position-hidden { 
+    z-index: 1; 
+    transform: translate3d(0, 0, 0) scale(0.7); 
+    opacity: 0; 
+    pointer-events: none; 
+  }
+
+  .nav-btn { 
+    background: #111111; 
+    color: #ffffff;
+    border: 1px solid #333333; 
+    padding: 10px 16px; 
+    border-radius: 50px; 
+    cursor: pointer; 
+    z-index: 10; 
+    transition: all 0.2s ease; 
+  }
+  
+  .nav-btn:hover { 
+    background: #222222; 
+    transform: scale(1.05); 
+  }
 `;

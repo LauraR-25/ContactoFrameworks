@@ -1,58 +1,30 @@
 import React from 'react';
 import styled from 'styled-components';
 
+const truncate = (text, maxLength = 20) => {
+  if (!text) return "";
+  return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+};
+
 export default function ContactCardGallery({ contact, onSelect, onEdit, onDelete }) {
   if (!contact) return null;
 
-  // URL del placeholder por si falla o si no hay foto
   const placeholderUrl = "https://images.placeholders.dev/?width=150&height=150&text=👤&theme=mono";
+  const fullName = `${contact.firstName} ${contact.lastName}`;
 
   return (
     <StyledWrapper>
-      <div 
-        className="card" 
-        onClick={onSelect}
-        role="button"
-        tabIndex={0}
-        title={`Contacto: ${contact.firstName} ${contact.lastName}\nNúmero: ${contact.number}\nNotas: ${contact.notes || '-'}`}
-      >
-        {/* Aquí aplicamos el onError */}
-        <img 
-          src={contact.photo || placeholderUrl} 
-          alt={contact.firstName} 
-          className="card__avatar" 
-          onError={(e) => {
-            e.target.src = placeholderUrl;
-          }}
-        />
+      <div className="card" onClick={onSelect} role="button" tabIndex={0} title={`${fullName}\nNúmero: ${contact.number}`}>
+        <img src={contact.photo || placeholderUrl} alt={fullName} className="card__avatar" onError={(e) => { e.target.src = placeholderUrl; }} />
         
         <div className="card__content">
-          <p className="card__title">{contact.firstName} {contact.lastName}</p>
-          <p className="card__description">📞 {contact.number}</p>
-          
-          {contact.notes && <p className="card__notes">📝 {contact.notes}</p>}
+          <p className="card__title" title={fullName}>{truncate(fullName, 20)}</p>
+          <p className="card__description" title={contact.number}>📞 {truncate(contact.number, 20)}</p>
+          {contact.notes && <p className="card__notes" title={contact.notes}>📝 {truncate(contact.notes, 20)}</p>}
           
           <div className="card__actions">
-            <button 
-              className="btn btn-edit" 
-              type="button" 
-              onClick={(e) => { 
-                e.stopPropagation(); 
-                onEdit(); 
-              }}
-            >
-              ✏️ Editar
-            </button>
-            <button 
-              className="btn btn-delete" 
-              type="button" 
-              onClick={(e) => { 
-                e.stopPropagation(); 
-                onDelete(); 
-              }}
-            >
-              🗑️ Borrar
-            </button>
+            <button className="btn btn-edit" type="button" onClick={(e) => { e.stopPropagation(); onEdit(); }}>✏️ Editar</button>
+            <button className="btn btn-delete" type="button" onClick={(e) => { e.stopPropagation(); onDelete(); }}>🗑️ Borrar</button>
           </div>
         </div>
       </div>

@@ -1,12 +1,17 @@
 import React from 'react';
 import styled from 'styled-components';
 
+const truncate = (text, maxLength = 20) => {
+  if (!text) return "";
+  return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+};
+
 export default function ContactCardCompact({ contact, onSelect, onEdit, onDelete }) {
   if (!contact) return null;
 
-  // Foto de respaldo por si el usuario no tiene (requisito de tu profesor)
   const defaultAvatar = "https://images.placeholders.dev/?width=150&height=150&text=👤&theme=mono";
   const fotoUrl = contact.photo || defaultAvatar;
+  const fullName = `${contact.firstName} ${contact.lastName}`;
 
   return (
     <StyledWrapper>
@@ -15,52 +20,27 @@ export default function ContactCardCompact({ contact, onSelect, onEdit, onDelete
         onClick={onSelect}
         role="button"
         tabIndex={0}
-        /* Tooltip nativo para que se vea la info completa al pasar el mouse */
-        title={`Contacto: ${contact.firstName} ${contact.lastName}\nNúmero: ${contact.number}`}
+        title={`${fullName}\nNúmero: ${contact.number}`}
       >
-        
-        {/* Sección de la Foto */}
         <div className="avatar-wrapper">
-          <img className="avatar" src={fotoUrl} alt={`${contact.firstName} ${contact.lastName}`} />
+          <img className="avatar" src={fotoUrl} alt={fullName} />
         </div>
         
-        {/* Información del Contacto */}
         <div className="info-wrapper">
-          <p className="heading">{contact.firstName} {contact.lastName}</p>
-          <p className="subtitle">📞 {contact.number}</p>
+          <p className="heading" title={fullName}>{truncate(fullName, 20)}</p>
+          <p className="subtitle" title={contact.number}>📞 {truncate(contact.number, 20)}</p>
         </div>
 
-        {/* Botones de acción integrados al diseño oscuro */}
         <div className="card-actions">
-          <button 
-            className="btn edit" 
-            type="button" 
-            onClick={(e) => { 
-              e.stopPropagation(); 
-              onEdit(); 
-            }}
-          >
-            ✏️ Editar
-          </button>
-          <button 
-            className="btn delete" 
-            type="button" 
-            onClick={(e) => { 
-              e.stopPropagation(); 
-              onDelete(); 
-            }}
-          >
-            🗑️ Borrar
-          </button>
+          <button className="btn edit" type="button" onClick={(e) => { e.stopPropagation(); onEdit(); }}>✏️ Editar</button>
+          <button className="btn delete" type="button" onClick={(e) => { e.stopPropagation(); onDelete(); }}>🗑️ Borrar</button>
         </div>
-
       </div>
     </StyledWrapper>
   );
 }
 
 const StyledWrapper = styled.div`
-  /* Padding extra para que el brillo de neón no se corte contra otras tarjetas */
   padding: 15px;
   display: flex;
   justify-content: center;
@@ -77,7 +57,7 @@ const StyledWrapper = styled.div`
     border-radius: 8px;
     cursor: pointer;
     color: white;
-    z-index: 1; /* Mantiene la tarjeta por encima del glow trasero */
+    z-index: 1;
   }
 
   /* El borde rotatorio de gradiente */

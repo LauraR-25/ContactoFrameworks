@@ -1,5 +1,13 @@
 import React from 'react';
-import styled from 'styled-components';
+// 1. Importación corregida que incluye 'keyframes'
+import styled, { keyframes } from 'styled-components';
+
+// 2. Definición encapsulada de la animación de balanceo y flotación
+const floatAnimation = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0px); }
+`;
 
 export default function ContactCardDetailed({ contact, onSelect, onEdit, onDelete, cardRole = "primary", bgType = "gold" }) {
   if (!contact) return null;
@@ -59,6 +67,26 @@ const StyledCard = styled.div`
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   overflow: hidden;
 
+  /* Transición suave para el estado Hover */
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+
+  /* Efectos dinámicos al pasar el cursor (Hover) */
+  &:hover {
+    transform: translateY(-8px) scale(1.02); /* Eleva la tarjeta ligeramente */
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.3); /* Sombra más profunda */
+
+    .avatar {
+      transform: scale(1.1) rotate(4deg); /* Agranda y rota la foto sutilmente */
+      border-color: rgba(255, 255, 255, 1);
+    }
+
+    .bg-letter {
+      /* Mantiene el centrado original pero añade pulso y rotación */
+      transform: translate(-50%, -50%) scale(1.08) rotate(-5deg);
+      opacity: 0.35;
+    }
+  }
+
   .content-shield {
     width: 100%;
     height: 100%;
@@ -66,6 +94,9 @@ const StyledCard = styled.div`
     border-radius: 20px;
     position: relative;
     overflow: hidden;
+    
+    /* 3. Asigna la animación constante usando la constante floatAnimation */
+    animation: ${floatAnimation} 6s ease-in-out infinite;
   }
 
   .bg-letter {
@@ -82,6 +113,9 @@ const StyledCard = styled.div`
     z-index: 1;
     pointer-events: none;
     font-family: system-ui, sans-serif;
+    
+    /* Transición para que herede el efecto hover de la tarjeta */
+    transition: transform 0.5s ease, opacity 0.5s ease;
   }
 
   .info-layout {
